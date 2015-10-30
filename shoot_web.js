@@ -6,9 +6,11 @@ goog.require('lime.Director');
 goog.require('lime.Scene');
 goog.require('lime.Layer');  
 goog.require('lime.animation.MoveBy');
+goog.require('lime.Circle');
 
 // pull in custom js files
 goog.require('shoot_web.Fly');
+goog.require('shoot_web.Web');
 
 // entrypoint
 shoot_web.start = function(){
@@ -17,6 +19,7 @@ shoot_web.start = function(){
 	  width: 520,
 	  height: 480,
 	  flies: [], // the flies to appear
+	  webs: [],
 	  renderer: lime.Renderer.CANVAS		  
 	};
 
@@ -40,7 +43,7 @@ shoot_web.start = function(){
 	gameLayer.appendChild(menuArea);	
 	
 	// create desired number of fly object and then add it to the gameObj flies array	
-	for(i = 0; i < 20; i++){
+	for(i = 0; i < 100; i++){
 		gameObj.flies.push(new shoot_web.Fly(gameObj, false, flyMovementBounds));
 	}
 	
@@ -49,13 +52,21 @@ shoot_web.start = function(){
 		gameLayer.appendChild(gameObj.flies[f]);
 	}	
 	
+	// DEBUG: add a web
+	var web1 = new shoot_web.Web();
+	gameObj.webs.push(web1);
+	gameLayer.appendChild(web1);		
+	
 	// a timer which executes every 0.1 seconds and moves the position of the flies
 	lime.scheduleManager.scheduleWithDelay(function() {
 		// call a function to animate the flies
 		for(f = 0; f < gameObj.flies.length; f++){
-			gameObj.flies[f].animateFly();
+			// animate the fly and get the updated state of the fly
+			if(gameObj.flies[f].isCaught == false){
+				gameObj.flies[f] = gameObj.flies[f].animateFly(gameObj);
+			}			
 		}		
-	});	
+	});
 		  
 	gameScene.appendChild(gameLayer);
 	director.makeMobileWebAppCapable();
