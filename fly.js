@@ -48,7 +48,6 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 		// if the fly has collided with the web
 		if(hasCollided){
 			this.isCaught = true
-			console.log(this);
 		}
 	}
 	

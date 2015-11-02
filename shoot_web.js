@@ -23,6 +23,8 @@ shoot_web.start = function(){
 	  renderer: lime.Renderer.CANVAS		  
 	};
 
+	var numberOfFlies = 10;
+	var maxWebs = 1; // define the max number of webs allowed in case this needs to be configured
 	var director = new lime.Director(document.body,gameObj.width,gameObj.height);
 	var gameScene = new lime.Scene().setRenderer(gameObj.renderer)
 	var gameLayer = new lime.Layer().setAnchorPoint(0,0);
@@ -35,27 +37,30 @@ shoot_web.start = function(){
 	var flyMovementBounds = new goog.math.Box(0, gameObj.width, (gameObj.height*4/5), 0);
 	
 	// add click events to the background
-	//goog.events.listen(background, ['touchstart', 'mousedown'], function(e) {				
-	//});
+	goog.events.listen(background, ['touchstart', 'mousedown'], function(e) {
+		e.stopPropagation();
+		
+		// only add a web to the game if we haven't already added the max number of allowed webs already
+		if(gameObj.webs.length < maxWebs){
+			var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y);
+			gameObj.webs.push(playerPositionWeb);
+			gameLayer.appendChild(playerPositionWeb);
+		}	
+	});
 	
 	// now add the background and menu to the game layer
 	gameLayer.appendChild(background);    
 	gameLayer.appendChild(menuArea);	
 	
 	// create desired number of fly object and then add it to the gameObj flies array	
-	for(i = 0; i < 100; i++){
+	for(i = 0; i < numberOfFlies; i++){
 		gameObj.flies.push(new shoot_web.Fly(gameObj, false, flyMovementBounds));
 	}
 	
 	// append the flies to the game layer
 	for(f = 0; f < gameObj.flies.length; f++){
 		gameLayer.appendChild(gameObj.flies[f]);
-	}	
-	
-	// DEBUG: add a web
-	var web1 = new shoot_web.Web();
-	gameObj.webs.push(web1);
-	gameLayer.appendChild(web1);		
+	}
 	
 	// a timer which executes every 0.1 seconds and moves the position of the flies
 	lime.scheduleManager.scheduleWithDelay(function() {
@@ -63,7 +68,15 @@ shoot_web.start = function(){
 		for(f = 0; f < gameObj.flies.length; f++){
 			// animate the fly and get the updated state of the fly
 			if(gameObj.flies[f].isCaught == false){
-				gameObj.flies[f] = gameObj.flies[f].animateFly(gameObj);
+				var updatedFlyInstance = gameObj.flies[f].animateFly(gameObj);
+				gameObj.flies[f] = updatedFlyInstance;
+				
+				// now that the fly has animated we need to again check the caught state, because if caught now then we need to show a new web
+				if(updatedFlyInstance.isCaught == true){
+					var dynamicWeb = new shoot_web.Web(gameObj.flies[f].positionX, gameObj.flies[f].positionY);
+					gameObj.webs.push(dynamicWeb);
+					gameLayer.appendChild(dynamicWeb);
+				}
 			}			
 		}		
 	});
