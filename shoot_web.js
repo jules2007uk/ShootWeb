@@ -25,6 +25,8 @@ shoot_web.start = function(){
 
 	var numberOfFlies = 10;
 	var maxWebs = 1; // define the max number of webs allowed in case this needs to be configured
+	var webCount = 0; // the ongoing live count of total deployed webs
+	var expiredWebCount = 0;
 	var director = new lime.Director(document.body,gameObj.width,gameObj.height);
 	var gameScene = new lime.Scene().setRenderer(gameObj.renderer)
 	var gameLayer = new lime.Layer().setAnchorPoint(0,0);
@@ -41,10 +43,13 @@ shoot_web.start = function(){
 		e.stopPropagation();
 		
 		// only add a web to the game if we haven't already added the max number of allowed webs already
-		if(gameObj.webs.length < maxWebs){
-			var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y);
+		if(webCount < maxWebs){
+			var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y);			
 			gameObj.webs.push(playerPositionWeb);
 			gameLayer.appendChild(playerPositionWeb);
+			
+			// increment web count
+			webCount += 1;
 		}	
 	});
 	
@@ -58,14 +63,15 @@ shoot_web.start = function(){
 	}
 	
 	// append the flies to the game layer
-	for(f = 0; f < gameObj.flies.length; f++){
+	for(f = 0; f < numberOfFlies; f++){
 		gameLayer.appendChild(gameObj.flies[f]);
 	}
 	
-	// a timer which executes every 0.1 seconds and moves the position of the flies
+	// a timer which executes every 0.1 seconds
 	lime.scheduleManager.scheduleWithDelay(function() {
 		// call a function to animate the flies
 		for(f = 0; f < gameObj.flies.length; f++){
+			
 			// animate the fly and get the updated state of the fly
 			if(gameObj.flies[f].isCaught == false){
 				var updatedFlyInstance = gameObj.flies[f].animateFly(gameObj);
@@ -73,10 +79,31 @@ shoot_web.start = function(){
 				
 				// now that the fly has animated we need to again check the caught state, because if caught now then we need to show a new web
 				if(updatedFlyInstance.isCaught == true){
+					// show a new web, the fly was caught
 					var dynamicWeb = new shoot_web.Web(gameObj.flies[f].positionX, gameObj.flies[f].positionY);
 					gameObj.webs.push(dynamicWeb);
 					gameLayer.appendChild(dynamicWeb);
+					
+					// increment web count
+					webCount += 1;
 				}
+				
+				// iterate all webs and expire them if they've lived for too long
+				for(w = 0; w < webCount; w++){
+					var iteratedWeb = gameObj.webs[w];
+					
+					// check for any webs not yet expired
+					if(iteratedWeb.isExpired == false){
+						if((new Date().getTime() - iteratedWeb.deployedTime) >= 3000){
+							iteratedWeb.expireWeb(gameLayer);
+						}
+					}
+				}
+				
+				// TODO: If all webs expired then we need to issue round over message
+				//if((webCount > 0) && expiredWebCount == webCount){
+					//alert('round over');
+				//}
 			}			
 		}		
 	});

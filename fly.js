@@ -38,16 +38,18 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 	// which may mean that we need to create goog.math.Box properties on Web and Fly
 	for(i=0; i < gameObj.webs.length; i++){
 		
-		// the following code detects collision between this fly and the currently iterated web
-		// this needs to be moved into a function
-		var webInstance = gameObj.webs[i];
-		var distance_squared = ((this.positionX - webInstance.position_.x) * (this.positionX - webInstance.position_.x)) + ((this.positionY - webInstance.position_.y) * (this.positionY - webInstance.position_.y));
-		var radii_squared = (this.radius + webInstance.radius) * (this.radius + webInstance.radius);
-		var hasCollided = (distance_squared < radii_squared);
-		
-		// if the fly has collided with the web
-		if(hasCollided){
-			this.isCaught = true
+		if(gameObj.webs[i].isExpired == false){
+			// the following code detects collision between this fly and the currently iterated web
+			// this needs to be moved into a function
+			var webInstance = gameObj.webs[i];
+			var distance_squared = ((this.positionX - webInstance.position_.x) * (this.positionX - webInstance.position_.x)) + ((this.positionY - webInstance.position_.y) * (this.positionY - webInstance.position_.y));
+			var radii_squared = (this.radius + webInstance.radius) * (this.radius + webInstance.radius);
+			var hasCollided = (distance_squared < radii_squared);
+			
+			// if the fly has collided with the web
+			if(hasCollided){
+				this.isCaught = true
+			}
 		}
 	}
 	
