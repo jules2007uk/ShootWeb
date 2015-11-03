@@ -1,6 +1,7 @@
 goog.provide('shoot_web.Fly');
 // inherits from lime.Sprite which allows creation of rectangles, images, etc.
 goog.require('lime.Circle');
+goog.require('lime.fill.LinearGradient');
  
 shoot_web.Fly = function(gameObj, isCaught, movementBounds) {
     goog.base(this);
@@ -23,8 +24,19 @@ shoot_web.Fly = function(gameObj, isCaught, movementBounds) {
 	// set the boundaries within which the fly can move
 	this.movementBounds = movementBounds;		
 	
-	// create a random Hex colour and assign it as the background colour of the fly
-	this.setFill('images/fly-image.png');
+	//var randomHexColour = Math.floor(Math.random()*16777215).toString(16);
+	
+	// define RGB of this fly
+	var r = Math.floor(Math.random() * 256) + 1;
+	var g = Math.floor(Math.random() * 256) + 1;
+	var b = Math.floor(Math.random() * 256) + 1;
+	
+	// fill background with gradient
+	var gradient = new lime.fill.LinearGradient()
+        .setDirection(0,0,1,1) // 45' angle 
+        .addColorStop(0, r, g, b ,1) // colour 1
+        .addColorStop(1, r, g, b ,.5); // colour 2
+	this.setFill(gradient);
 }
  
 goog.inherits(shoot_web.Fly,lime.Circle);

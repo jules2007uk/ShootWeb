@@ -7,7 +7,7 @@ goog.require('lime.Scene');
 goog.require('lime.Layer');  
 goog.require('lime.animation.MoveBy');
 goog.require('lime.Circle');
-
+	
 // pull in custom js files
 goog.require('shoot_web.Fly');
 goog.require('shoot_web.Web');
@@ -18,7 +18,7 @@ shoot_web.start = function(){
 	var gameObj = {
 	  width: 520,
 	  height: 480,	  
-	  renderer: lime.Renderer.CANVAS		  
+	  renderer: lime.Renderer.CANVAS //CANVAS or DOM		  
 	};
 
 	var numberOfFlies = 10;
@@ -38,7 +38,8 @@ shoot_web.start = function(){
 	mainMenuScene = startMainMenu(gameObj);
 	
 	// show the menu scene
-	director.replaceScene(gameScene);	
+	director.replaceScene(mainMenuScene);	
+	director.replaceScene(gameScene);
 }
 
 startMainMenu = function(gameObj){
@@ -47,16 +48,15 @@ startMainMenu = function(gameObj){
   
 	// create the game background and menu area
 	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height).setFill('#FCCC49').setAnchorPoint(0,0).setPosition(0,0);	
-	var title = new lime.Label().setText('Shoot Web').setPosition(200,200);
-	
+	var title = new lime.Label().setText('Collision').setPosition(gameObj.width/2,gameObj.height/2);
+		
 	// add title
 	background.appendChild(title);
 	
 	// now add the background and menu to the game layer
-	gameLayer.appendChild(background);    
-	
+	gameLayer.appendChild(background); 	
 	 
-	gameScene.appendChild(gameLayer);
+	gameScene.appendChild(gameLayer);	
 	return gameScene;
 }
 
@@ -66,8 +66,8 @@ startNewRound = function(gameObj, numberOfFlies, maxWebs, webCount, expiredWebCo
 	var gameLayer = new lime.Layer().setAnchorPoint(0,0);
   
 	// create the game background and menu area
-	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height*4/5).setFill('#F3E2A9').setAnchorPoint(0,0).setPosition(0,0);
-	var menuArea = new lime.Sprite().setSize(gameObj.width,gameObj.height/5).setFill('#8B5A00').setPosition(gameObj.width/2,gameObj.height*9/10)
+	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height*4/5).setFill('#F0F5F5').setAnchorPoint(0,0).setPosition(0,0);
+	var menuArea = new lime.Sprite().setSize(gameObj.width,gameObj.height/5).setFill('#0A0F0F').setPosition(gameObj.width/2,gameObj.height*9/10)
 	
 	// set the movement boundary for the flies (e.g. the main game area)
 	var flyMovementBounds = new goog.math.Box(0, gameObj.width, (gameObj.height*4/5), 0);
@@ -80,7 +80,7 @@ startNewRound = function(gameObj, numberOfFlies, maxWebs, webCount, expiredWebCo
 		
 		// only add a web to the game if we haven't already added the max number of allowed webs already
 		if(webCount < maxWebs){
-			var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y);			
+			var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y, null);			
 			webs.push(playerPositionWeb);
 			gameLayer.appendChild(playerPositionWeb);
 			
@@ -115,9 +115,14 @@ startNewRound = function(gameObj, numberOfFlies, maxWebs, webCount, expiredWebCo
 				
 				// now that the fly has animated we need to again check the caught state, because if caught now then we need to show a new web
 				if(updatedFlyInstance.isCaught == true){
-					// show a new web, the fly was caught
-					var dynamicWeb = new shoot_web.Web(flies[f].positionX, flies[f].positionY);
+					// show a new web, the fly was caught					
+					var dynamicWeb = new shoot_web.Web(flies[f].positionX, flies[f].positionY, updatedFlyInstance);
 					webs.push(dynamicWeb);
+					
+					// remove fly
+					gameLayer.removeChild(updatedFlyInstance);
+					
+					// add web
 					gameLayer.appendChild(dynamicWeb);
 					
 					// increment web count

@@ -1,7 +1,7 @@
 goog.provide('shoot_web.Web');
 goog.require('lime.Circle');
  
-shoot_web.Web = function(x, y) {
+shoot_web.Web = function(x, y, flyInstance) {
     goog.base(this);
 	
 	this.width = 50;
@@ -9,10 +9,27 @@ shoot_web.Web = function(x, y) {
 	this.position_.x = x;
 	this.position_.y = y;
 	this.setSize(this.height, this.width);
-	this.setFill('images/web-image.png');	
 	this.radius = (this.width/2); // radius is half of width
 	this.deployedTime = new Date().getTime();
 	this.isExpired = false;
+	
+	if(flyInstance != null){
+		
+		// set background color according to fly background colour		
+		var b = flyInstance.fill_.colors_[0][1].b;
+		var g = flyInstance.fill_.colors_[0][1].g;
+		var r = flyInstance.fill_.colors_[0][1].r;
+		
+		// fill background 
+		var gradient = new lime.fill.LinearGradient()
+			.setDirection(0,0,1,1) // 45' angle 
+			.addColorStop(0, r, g, b ,.5) // add colour			
+		this.setFill(gradient);
+	}
+	else{
+		// set default background colour
+		this.setFill('#FF00FF');
+	}
 }
  
 goog.inherits(shoot_web.Web,lime.Circle);
