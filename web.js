@@ -28,7 +28,7 @@ shoot_web.Web = function(x, y, flyInstance) {
 	}
 	else{
 		// set default background colour
-		this.setFill('#FF00FF');
+		this.setFill('#0A0F0F');
 	}
 }
  
