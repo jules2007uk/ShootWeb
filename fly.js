@@ -45,9 +45,7 @@ goog.inherits(shoot_web.Fly,lime.Circle);
  * Start new fly animation
  **/
  shoot_web.Fly.prototype.animateFly = function(gameObj, webs) {	
-	// TODO: cycle through all webs and check if the current fly has collided with it
-	// use goog.math.Box.intersects() to check if two box objects overlap
-	// which may mean that we need to create goog.math.Box properties on Web and Fly
+	// cycle through all webs and check if the current fly has collided with it	
 	for(i=0; i < webs.length; i++){
 		
 		if(webs[i].isExpired == false){
