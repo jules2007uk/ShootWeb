@@ -15,6 +15,7 @@ goog.require('shoot_web.Web');
 var modalBackgroundHexColour = '#55BDA4';
 var modalTextHexColour = '#B1EAE1';
 var menuHexColour = '#ECF9F6';
+var menuScoreBackgroundHexColour = '#D8F3ED';
 var menuFontHexColour = '#B1EAE1';
 var gameAreaHexColour = '#60CEB5';
 var flies = [];
@@ -28,6 +29,7 @@ var director;
 var level = 1;
 var mainScreenBackgroundGradient;
 var mainScreenFontColour = '#FFFDFC';
+var score = 0;
 
 //object to store game-level properties
 var gameObj;
@@ -76,14 +78,29 @@ shoot_web.start = function(){
 }
 
 getLevelConfig = function(levelNumber){
-	var numberOfFlies =(levelNumber + 2);
-	var maxWebs = 1;
-	var targetCatches = Math.ceil(numberOfFlies / 2);	
+	// to work out the number of flies required, round down levelNumber / 2, and then add 1 to it
+	var numberOfFlies = (Math.floor(levelNumber/2) + 1);	
+	var maxWebs = 1; //  always 1
+	var targetCatches;
+	
+	if(isOdd(levelNumber)){
+		// levelNumber is odd number so targetCatches is the same value as numberOfFlies
+		targetCatches = numberOfFlies;
+	}
+	else{
+		// levelNumber is an even number so targetCatches is the same value as numberOfFlies - 1
+		targetCatches = (numberOfFlies - 1);
+	}
 	
 	// create return object with level config
 	levelConfig = {numberOfFlies: numberOfFlies, maxWebs: maxWebs, targetCatches: targetCatches}; // number of flies | max webs | target
 	
 	return levelConfig;
+}
+
+// quick function to determine if a number passed in is odd or even
+function isOdd(num) { 
+	return num % 2;
 }
 
 // reset the game round variables such as counters of webs and flies
@@ -105,27 +122,20 @@ addModalMessage = function(gameLayer, message){
 	gameLayer.appendChild(modalPopup);
 	gameLayer.appendChild(title);
 	//gameLayer.appendChild(modalBackground);
-	
-	/*// add tap event to the modal background to remove the modal on tap
-	goog.events.listen(modalBackground, ['touchstart', 'mousedown'], function(e) {		
-		e.stopPropagation();
-		//e.event.preventDefault();
-		gameLayer.removeChild(modalBackground);		
-	});*/
+
 }
 
 startMainMenu = function(){
 	var gameScene = new lime.Scene().setRenderer(gameObj.renderer);
 	var gameLayer = new lime.Layer().setAnchorPoint(0,0);
-  
 	
 	// example of how to set a background image
 	//var background = new lime.Sprite().setFill('http://www.androidtapp.com/wp-content/uploads/2011/11/NodeBeat-Splash-screen.jpg').setAnchorPoint(0,0).setPosition(0,0).setSize(gameObj.width, gameObj.height);	
 	
 	// create the game background and menu area
 	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height).setFill(mainScreenBackgroundGradient).setAnchorPoint(0,0).setPosition(0,0);
-	var title = new lime.Label().setText('Ball Catch').setPosition(gameObj.width/2,gameObj.height/2).setFontColor(mainScreenFontColour);
-	var instructions = new lime.Label().setText('Tap anywhere to start').setPosition(gameObj.width/2,(gameObj.height/1.5)).setFontColor(mainScreenFontColour);
+	var title = new lime.Label().setText('Ball Catch').setPosition(gameObj.width/2,gameObj.height/2).setFontColor(mainScreenFontColour).setFontSize(30);
+	var instructions = new lime.Label().setText('Tap anywhere to start').setPosition(gameObj.width/2,(gameObj.height/1.5)).setFontColor(mainScreenFontColour).setFontSize(30);
 	
 	// add title
 	background.appendChild(title);
@@ -133,11 +143,7 @@ startMainMenu = function(){
 	
 	// now add the background and menu to the game layer
 	gameLayer.appendChild(background); 	 
-	gameScene.appendChild(gameLayer);	
-	
-	goog.events.listen(gameScene, ['touchstart', 'mousedown'], function(e) {
-		//startNewRound();
-	});
+	gameScene.appendChild(gameLayer);
 	
 	return gameScene;
 }
@@ -147,7 +153,8 @@ startNewRound = function(gameObj, levelSettings){
 	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height*4/5).setFill(gameAreaHexColour).setAnchorPoint(0,0).setPosition(0,0);
 	var menuArea = new lime.Sprite().setSize(gameObj.width,gameObj.height/5).setFill(menuHexColour).setPosition(gameObj.width/2,gameObj.height*9/10);	
 	var flyMovementBounds = new goog.math.Box(0, gameObj.width, (gameObj.height*4/5), 0); // set the movement boundary for the flies (e.g. the main game area)
-	var targetMenuLabel = new lime.Label().setText('Target collisions: ' + levelSettings.targetCatches).setPosition(menuArea.position_.x, menuArea.position_.y).setFontColor('#000000').setFill(menuHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(1, '#000000');
+	var targetMenuLabel = new lime.Label().setFontSize(30).setText('Target catches: ' + levelSettings.targetCatches).setPosition(menuArea.position_.x, menuArea.position_.y - 30).setFontColor('#000000').setFill(menuScoreBackgroundHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(2, '#c5ede4');
+	var currentScoreLabel = new lime.Label().setFontSize(30).setText('Current score: ' + score).setPosition(targetMenuLabel.position_.x, targetMenuLabel.position_.y + 60).setFontColor('#000000').setFill(menuScoreBackgroundHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(2, '#c5ede4');
 		
 	// reset the game round variables such as ongoing counts of webs/flies, etc.
 	resetGameRoundVariables();	
@@ -172,8 +179,8 @@ startNewRound = function(gameObj, levelSettings){
 	// now add the background and menu to the game layer
 	gameLayer.appendChild(background);    
 	gameLayer.appendChild(menuArea);
-	gameLayer.appendChild(targetMenuLabel);
-	//gameLayer.appendChild(collisionsMenuLabel);
+	gameLayer.appendChild(targetMenuLabel);	
+	gameLayer.appendChild(currentScoreLabel);
 	
 	// create desired number of fly object and then add it to the gameObj flies array	
 	for(i = 0; i < levelSettings.numberOfFlies; i++){		
@@ -244,13 +251,13 @@ updateGameFrame = function(){
 			// immediately stop the parent function 'updateGameFrame' from being called by the timer, because the round is over
 			lime.scheduleManager.unschedule(updateGameFrame, ctx);
 			
-			// round over - now what?
+			// round is now over
 			if((webCount - 1) < levelConfig.targetCatches){
 				// you lost
 				// set level count back to 1
 				level = 1;
-
-				addModalMessage(gameLayer, 'Game over <score> pts');
+				
+				addModalMessage(gameLayer, 'Game over ' + score + ' pts');
 				
 				lime.scheduleManager.callAfter(function(){
 																		
@@ -262,9 +269,10 @@ updateGameFrame = function(){
 			}
 			else{				
 				// increment game to next level up
-				level += 1;
+				level += 1;				
 				
-				addModalMessage(gameLayer, 'Round won');
+				// append to the user's score in this game so far
+				appendToScore(flies);
 				
 				// start the next round
 				var newRound = startNewRound(gameObj, getLevelConfig(level));
@@ -272,6 +280,29 @@ updateGameFrame = function(){
 			}			
 			
 		}
+	}
+}
+
+// appends to the user's score
+appendToScore = function(fliesInRound){
+	
+	// each captured fly is worth 50pts, and catching all flies is worth an extra 25pts	
+	var potentialNumberCatches = fliesInRound.length;
+	var actualNumberCatches = 0;	
+	
+	for(i = 0; i < potentialNumberCatches; i++){
+		
+		if(fliesInRound[i].isCaught){
+			actualNumberCatches += 1;
+		}
+	}
+	
+	// add 50pts for each one caught
+	score += (actualNumberCatches * 50);
+	
+	// if player has caught all available flies then add an extra 25pts
+	if(potentialNumberCatches == actualNumberCatches){
+		score += 25;
 	}
 }
 
