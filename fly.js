@@ -27,9 +27,12 @@ shoot_web.Fly = function(gameObj, isCaught, movementBounds) {
 	//var randomHexColour = Math.floor(Math.random()*16777215).toString(16);
 	
 	// define RGB of this fly
-	var r = Math.floor(Math.random() * 256) + 1;
+	/*var r = Math.floor(Math.random() * 256) + 1;
 	var g = Math.floor(Math.random() * 256) + 1;
-	var b = Math.floor(Math.random() * 256) + 1;
+	var b = Math.floor(Math.random() * 256) + 1;*/
+	var r = 255;
+	var g = 253;
+	var b = 252;
 	
 	// fill background with gradient
 	var gradient = new lime.fill.LinearGradient()
@@ -37,6 +40,7 @@ shoot_web.Fly = function(gameObj, isCaught, movementBounds) {
         .addColorStop(0, r, g, b ,1) // colour 1
         .addColorStop(1, r, g, b ,.5); // colour 2
 	this.setFill(gradient);
+	//this.setFill('#FFFDFC');
 }
  
 goog.inherits(shoot_web.Fly,lime.Circle);
