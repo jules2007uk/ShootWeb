@@ -45,10 +45,10 @@ shoot_web.start = function(){
 	  renderer: lime.Renderer.CANVAS //CANVAS or DOM		  
 	};
 	
-	mainScreenBackgroundGradient = new lime.fill.LinearGradient().
+	/*mainScreenBackgroundGradient = new lime.fill.LinearGradient().
 										setDirection(0,0,1,1). // 45' angle 
-										addColorStop(0,100,0,0,0.9). // start from red color (slightly transparent)
-										addColorStop(1,0,0,100,1); // end with blue*/
+										addColorStop(0,96,206,201,0.9). // start from color (slightly transparent)
+										addColorStop(1,0,0,100,1); // end with colour */
 										
 	director = new lime.Director(document.body,gameObj.width,gameObj.height);
 	
@@ -68,13 +68,6 @@ shoot_web.start = function(){
 	
 	// show the menu scene (keeping the game scene in the background)
 	director.pushScene(mainMenuScene);
-	
-	// add event listener to capture any click on the main menu
-	goog.events.listen(mainMenuScene, ['touchstart', 'mousedown'], function(e, gameScene) {
-		e.stopPropagation();
-		//e.event.preventDefault();
-		director.popScene(gameScene);	
-	});
 }
 
 getLevelConfig = function(levelNumber){
@@ -111,39 +104,74 @@ resetGameRoundVariables = function(){
 	expiredWebCount = 0; // the ongoing live count of expired webs
 }
 
-addModalMessage = function(gameLayer, message){
-	// modal popup box
-	var modalPopup = new lime.Sprite().setSize(gameObj.width * 0.8,gameObj.height * 0.3).setFill(modalBackgroundHexColour).setPosition(gameObj.width/2,gameObj.height/2);
-	// text to add to the modal popup
-	var title = new lime.Label().setText(message).setPosition(gameObj.width/2,gameObj.height/2).setFontColor(modalTextHexColour);
-	// add transparent background to prevent tapping to create a web
-	//var modalBackground = new lime.Sprite().setSize(gameObj.width, gameObj.height).setFill(menuHexColour).setAnchorPoint(0,0).setOpacity(0.5);	
+addModalMessage = function(doAddCloseHandler, gameLayer, message, title, message2, message3){
+	// add transparent background to capture tap event - used for closing the modal
+	var modalBackground = new lime.Sprite().setSize(gameObj.width, gameObj.height).setFill(menuHexColour).setAnchorPoint(0,0).setOpacity(0.5);
 	
+	// modal popup box, title, and primary message
+	var modalPopup = new lime.Sprite().setSize(gameObj.width * 0.8,gameObj.height * 0.5).setFill(modalBackgroundHexColour).setPosition(gameObj.width/2,gameObj.height/2);
+	var lblTitle = new lime.Label().setText(title).setPosition(0, - ((modalPopup.size_.height/2) - 20)).setFontColor(modalTextHexColour).setSize((modalPopup.size_.width * 0.9), 10).setFontWeight(600);
+	var lblMessage = new lime.Label().setText(message).setPosition(0, (lblTitle.position_.y + lblTitle.size_.height) + 20).setFontColor(modalTextHexColour).setSize((modalPopup.size_.width * 0.9), 10).setAlign('center');
+	
+	modalPopup.appendChild(lblTitle);
+	modalPopup.appendChild(lblMessage);
+	
+	// only add further messages to modal if parameters are defined
+	if(message2 != undefined){
+		var lblMessage2 = new lime.Label().setText(message2).setPosition(0, (lblMessage.position_.y + lblMessage.size_.height) + 30).setFontColor(modalTextHexColour).setSize((modalPopup.size_.width * 0.9), 10).setAlign('center');
+		modalPopup.appendChild(lblMessage2);
+	}	
+	if(message3 != undefined){
+		var lblMessage3 = new lime.Label().setText(message3).setPosition(0, (lblMessage2.position_.y + lblMessage2.size_.height) + 30).setFontColor(modalTextHexColour).setSize((modalPopup.size_.width * 0.9), 10).setAlign('center');
+		modalPopup.appendChild(lblMessage3);
+	}
+	
+	// add popup and background to gameLayer
 	gameLayer.appendChild(modalPopup);
-	gameLayer.appendChild(title);
-	//gameLayer.appendChild(modalBackground);
-
+	gameLayer.appendChild(modalBackground);
+	
+	// do we want to add a tap handler to allow user to close the modal?
+	if(doAddCloseHandler){
+		// add event listener to capture any click on the modal background
+		goog.events.listen(modalBackground, ['touchstart', 'mousedown'], function(e, gameScene) {
+			e.event.stopPropagation();		
+					
+			// remove popup and background from gameLayer
+			gameLayer.removeChild(modalPopup);
+			gameLayer.removeChild(modalBackground);
+		});
+	}
 }
 
 startMainMenu = function(){
 	var gameScene = new lime.Scene().setRenderer(gameObj.renderer);
 	var gameLayer = new lime.Layer().setAnchorPoint(0,0);
 	
-	// example of how to set a background image
-	//var background = new lime.Sprite().setFill('http://www.androidtapp.com/wp-content/uploads/2011/11/NodeBeat-Splash-screen.jpg').setAnchorPoint(0,0).setPosition(0,0).setSize(gameObj.width, gameObj.height);	
-	
 	// create the game background and menu area
-	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height).setFill(mainScreenBackgroundGradient).setAnchorPoint(0,0).setPosition(0,0);
-	var title = new lime.Label().setText('Ball Catch').setPosition(gameObj.width/2,gameObj.height/2).setFontColor(mainScreenFontColour).setFontSize(30);
-	var instructions = new lime.Label().setText('Tap anywhere to start').setPosition(gameObj.width/2,(gameObj.height/1.5)).setFontColor(mainScreenFontColour).setFontSize(30);
+	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height).setAnchorPoint(0,0).setPosition(0,0);
+	var title = new lime.Label().setText('Ball Catch').setPosition(gameObj.width/2,gameObj.height/2).setFontColor(mainScreenFontColour).setFontSize(30).setFontWeight(600);
+	var globalHighScore = new lime.Label().setText('Global High Score: 99').setPosition(gameObj.width/2, (title.position_.y + title.fontSize_ + 40)).setFontColor(mainScreenFontColour).setFontSize(30);
+	var instructions = new lime.Label().setText('Tap anywhere to start').setPosition(gameObj.width/2, (globalHighScore.position_.y + globalHighScore.fontSize_ + 40)).setFontColor(mainScreenFontColour).setFontSize(30);
 	
 	// add title
 	background.appendChild(title);
 	background.appendChild(instructions);
+	background.appendChild(globalHighScore);
 	
 	// now add the background and menu to the game layer
-	gameLayer.appendChild(background); 	 
+	gameLayer.appendChild(background);
+	
 	gameScene.appendChild(gameLayer);
+	
+	// DEBUG - show help modal
+	//addModalMessage(true, gameLayer, 'Place one sticky ball per round by tapping in the game area.', 'How to play', 'Wait for loose balls to collide with the sticky ball, before it expires.', 'Catch the target amount of balls per round to progress to the next round. Verbose text in here to see what happens');
+	
+	// add event listener to capture any click on the main menu background
+	goog.events.listen(background, ['touchstart', 'mousedown'], function(e, gameScene) {
+		e.event.stopPropagation();
+		
+		director.popScene(gameScene);	
+	});
 	
 	return gameScene;
 }
@@ -163,7 +191,7 @@ startNewRound = function(gameObj, levelSettings){
 	
 	// add click events to the background
 	goog.events.listen(background, ['touchstart', 'mousedown'], function(e) {		
-		e.stopPropagation();
+		e.event.stopPropagation();
 		
 		// only add a web to the game if we haven't already added the max number of allowed webs already
 		if(webCount < levelSettings.maxWebs){
@@ -257,13 +285,17 @@ updateGameFrame = function(){
 				// set level count back to 1
 				level = 1;
 				
-				addModalMessage(gameLayer, 'Game over ' + score + ' pts');
+				addModalMessage(false, gameLayer, score + ' pts', 'Game over');
 				
+				// 4 sceond timer
 				lime.scheduleManager.callAfter(function(){
-																		
+					
+					// restart the game which will kick the player back to the main menu
+					location.reload();
+					
 					// fetch next level settings and start new round				
-					var newRound = startNewRound(gameObj, getLevelConfig(level));
-					director.replaceScene(newRound);
+					//var newRound = startNewRound(gameObj, getLevelConfig(level));
+					//director.replaceScene(newRound);
 					
 				}, ctx, 4000);
 			}
