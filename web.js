@@ -34,7 +34,7 @@ shoot_web.Web = function(x, y, flyInstance, webNumber) {
 	
 	if(webNumber != undefined){
 		// create a new label to hold the web number
-		var numberLabel = new lime.Label().setText(this.webNumber);
+		var numberLabel = new lime.Label().setText(this.webNumber).setFontWeight(600).setFontColor('#FCE9A4').setFontSize('20');
 		
 		// add web number labelt to the web
 		this.appendChild(numberLabel);

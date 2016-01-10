@@ -30,6 +30,9 @@ var level = 1;
 var mainScreenBackgroundGradient;
 var mainScreenFontColour = '#FFFDFC';
 var score = 0;
+var targetMenuLabel;
+var currentScoreLabel;
+var roundCatchCount = 0;
 
 //object to store game-level properties
 var gameObj;
@@ -153,6 +156,10 @@ startMainMenu = function(){
 	var globalHighScore = new lime.Label().setText('Global High Score: 99').setPosition(gameObj.width/2, (title.position_.y + title.fontSize_ + 40)).setFontColor(mainScreenFontColour).setFontSize(30);
 	var instructions = new lime.Label().setText('Tap anywhere to start').setPosition(gameObj.width/2, (globalHighScore.position_.y + globalHighScore.fontSize_ + 40)).setFontColor(mainScreenFontColour).setFontSize(30);
 	
+	// hide the target and current score labels during main menu screen
+	targetMenuLabel.setHidden(true);
+	currentScoreLabel.setHidden(true);
+	
 	// add title
 	background.appendChild(title);
 	background.appendChild(instructions);
@@ -170,6 +177,11 @@ startMainMenu = function(){
 	goog.events.listen(background, ['touchstart', 'mousedown'], function(e, gameScene) {
 		e.event.stopPropagation();
 		
+		// show the target and current score labels
+		targetMenuLabel.setHidden(false);
+		currentScoreLabel.setHidden(false);
+		
+		// put the game scene into view
 		director.popScene(gameScene);	
 	});
 	
@@ -181,8 +193,8 @@ startNewRound = function(gameObj, levelSettings){
 	var background = new lime.Sprite().setSize(gameObj.width,gameObj.height*4/5).setFill(gameAreaHexColour).setAnchorPoint(0,0).setPosition(0,0);
 	var menuArea = new lime.Sprite().setSize(gameObj.width,gameObj.height/5).setFill(menuHexColour).setPosition(gameObj.width/2,gameObj.height*9/10);	
 	var flyMovementBounds = new goog.math.Box(0, gameObj.width, (gameObj.height*4/5), 0); // set the movement boundary for the flies (e.g. the main game area)
-	var targetMenuLabel = new lime.Label().setFontSize(30).setText('Target catches: ' + levelSettings.targetCatches).setPosition(menuArea.position_.x, menuArea.position_.y - 30).setFontColor('#000000').setFill(menuScoreBackgroundHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(2, '#c5ede4');
-	var currentScoreLabel = new lime.Label().setFontSize(30).setText('Current score: ' + score).setPosition(targetMenuLabel.position_.x, targetMenuLabel.position_.y + 60).setFontColor('#000000').setFill(menuScoreBackgroundHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(2, '#c5ede4');
+	targetMenuLabel = new lime.Label().setFontSize(30).setText('Target catches: ' + levelSettings.targetCatches).setPosition(menuArea.position_.x, menuArea.position_.y - 30).setFontColor('#000000').setFill(menuScoreBackgroundHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(2, '#c5ede4').setHidden(false);
+	currentScoreLabel = new lime.Label().setFontSize(30).setText('Current score: ' + score).setPosition(targetMenuLabel.position_.x, targetMenuLabel.position_.y + 60).setFontColor('#000000').setFill(menuScoreBackgroundHexColour).setPadding(5, 5, 5, 5).setAlign('left').setStroke(2, '#c5ede4').setHidden(false);
 		
 	// reset the game round variables such as ongoing counts of webs/flies, etc.
 	resetGameRoundVariables();	
@@ -247,6 +259,10 @@ updateGameFrame = function(){
 				var dynamicWeb = new shoot_web.Web(updatedFlyInstance.positionX, updatedFlyInstance.positionY, updatedFlyInstance, webCount);
 				webs.push(dynamicWeb);
 				
+				// add to number of catches this round
+				// (Not currently used, but could be shown in the UI)
+				roundCatchCount += 1;
+								
 				// remove fly
 				gameLayer.removeChild(updatedFlyInstance);
 				
