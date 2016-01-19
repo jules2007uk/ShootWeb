@@ -4,16 +4,16 @@ goog.require('lime.Circle');
 shoot_web.Web = function(x, y, flyInstance, webNumber) {
     goog.base(this);
 	
-	this.width = gameObj.width/6; // TODO: Set to gameObj.width/6 if orientation = Portrait, else use gameObj.height/6
-	this.height = this.width;
-	this.position_.x = x;
-	this.position_.y = y;
+	this.width = 100;
+	this.height = 100;
+	//this.position_.x = x;
+	//this.position_.y = y;
 	this.setSize(this.height, this.width);
 	this.radius = (this.width/2); // radius is half of width
 	this.deployedTime = new Date().getTime();
 	this.isExpired = false;
 	this.webNumber = webNumber; // the number which corresponds to the order of when the web was caught
-	
+		
 	if(flyInstance != null){
 		
 		// set background color according to fly background colour		
@@ -44,11 +44,11 @@ shoot_web.Web = function(x, y, flyInstance, webNumber) {
  
 goog.inherits(shoot_web.Web,lime.Circle);
 
-shoot_web.Web.prototype.expireWeb = function(gameLayer) {	
+shoot_web.Web.prototype.expireWeb = function(ctx) {	
 
 	// mark the web as expired
 	this.isExpired = true;
 
 	// remove the web from the UI (actually could do with some nice animation)
-	gameLayer.removeChild(this);
+	ctx.removeChild(this);
 }

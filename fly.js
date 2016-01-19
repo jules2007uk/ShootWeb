@@ -1,15 +1,15 @@
 goog.provide('shoot_web.Fly');
-// inherits from lime.Sprite which allows creation of rectangles, images, etc.
 goog.require('lime.Circle');
 goog.require('lime.fill.LinearGradient');
  
-shoot_web.Fly = function(gameObj, isCaught, movementBounds) {
+shoot_web.Fly = function(isCaught, movementBounds) {
     goog.base(this);
-
+	
 	// define the properties of the fly	
 	this.isCaught = isCaught; // is the fly caught in the web?
-	this.height = gameObj.height/50;
-	this.width = gameObj.height/50;
+	this.height = 20; //gameObj.height/50;
+	this.width = 20; //gameObj.height/50;
+	
 	this.setSize(this.width, this.height);	// the size of the fly
 	this.radius = (this.width/2); // because the shape is circular, radius is half of width
 		
@@ -26,29 +26,32 @@ shoot_web.Fly = function(gameObj, isCaught, movementBounds) {
 	
 	//var randomHexColour = Math.floor(Math.random()*16777215).toString(16);
 	
-	// define RGB of this fly
+	// define RGB of this fly radomnly
 	/*var r = Math.floor(Math.random() * 256) + 1;
 	var g = Math.floor(Math.random() * 256) + 1;
 	var b = Math.floor(Math.random() * 256) + 1;*/
-	var r = 255;
-	var g = 253;
-	var b = 252;
+	
+	var r = 0; //255;
+	var g = 0; //253;
+	var b = 0; //252;
 	
 	// fill background with gradient
 	var gradient = new lime.fill.LinearGradient()
         .setDirection(0,0,1,1) // 45' angle 
         .addColorStop(0, r, g, b ,1) // colour 1
         .addColorStop(1, r, g, b ,.5); // colour 2
-	this.setFill(gradient);
-	//this.setFill('#FFFDFC');
+	this.setFill(gradient);	
 }
  
 goog.inherits(shoot_web.Fly,lime.Circle);
 
+
 /**
  * Start new fly animation
  **/
- shoot_web.Fly.prototype.animateFly = function(gameObj, webs) {	
+ 
+ shoot_web.Fly.prototype.animateFly = function(webs) {
+ 
 	// cycle through all webs and check if the current fly has collided with it	
 	for(i=0; i < webs.length; i++){
 		
