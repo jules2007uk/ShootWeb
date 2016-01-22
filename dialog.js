@@ -66,13 +66,13 @@ shoot_web.dialogs.box3 = function(game) {
     return b;
 };
 
-shoot_web.dialogs.box4 = function(game) {
+shoot_web.dialogs.box4 = function(score) {
     var b = shoot_web.dialogs.blank();
 
     var txt = new lime.Label().setText('Game Over').setFontSize(40).setPosition(0, 70);
     b.appendChild(txt);
 
-    var descr = new lime.Label().setText('You scored ' + game.score).setSize(450, 50).setPosition(0, 130).setFontSize(24).setFontColor('#333');
+    var descr = new lime.Label().setText('You scored ' + score).setSize(450, 50).setPosition(0, 130).setFontSize(24).setFontColor('#333');
     b.appendChild(descr);
 
     var tutorial1 = new lime.Sprite().setFill('#FF0000').setPosition(0, 360);

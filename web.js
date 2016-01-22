@@ -6,8 +6,8 @@ shoot_web.Web = function(x, y, flyInstance, webNumber) {
 	
 	this.width = 100;
 	this.height = 100;
-	//this.position_.x = x;
-	//this.position_.y = y;
+	this.position_.x = x;
+	this.position_.y = y;
 	this.setSize(this.height, this.width);
 	this.radius = (this.width/2); // radius is half of width
 	this.deployedTime = new Date().getTime();

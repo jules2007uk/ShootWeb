@@ -8,17 +8,22 @@ goog.require('lime.animation.MoveTo');
 goog.require('lime.animation.ScaleBy');
 goog.require('lime.animation.Spawn');
 goog.require('lime.CanvasContext');
-
 goog.require('shoot_web.dialogs');
 
 shoot_web.Game = function(level) {
     lime.Scene.call(this);
 	lime.Renderer.CANVAS;
 	
+	this.setRenderer(lime.Renderer.CANVAS);	
 	this.WIDTH = 600;      
 	this.level = level;	
-	this.mask = new lime.Sprite().setFill(new lime.fill.LinearGradient().addColorStop(0, 0, 0, 0, 0).addColorStop(.95, 0, 0, 0, .1).addColorStop(1, 0, 0, 0, .0)).setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130).setStroke(2, '#FF0000');
-    this.appendChild(this.mask);	
+	this.mask = new lime.Sprite().setFill(new lime.fill.LinearGradient().addColorStop(0.5, 224, 224, 224, .5).addColorStop(0.8, 192, 192, 192, .5)).setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130);
+    
+	/*
+	var test1 = new lime.Label().setText('Test...').setFontSize(52).setPosition(0, 0).setAnchorPoint(0,0);
+	this.mask.appendChild(test1);*/
+	
+	this.appendChild(this.mask);	
 	this.mask = new lime.Sprite().setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130);
     this.appendChild(this.mask);	
 	this.layer = new lime.Layer();    
@@ -26,10 +31,10 @@ shoot_web.Game = function(level) {
     this.layer.setMask(this.mask);
     this.layer.setOpacity(.5);	
 	this.cover = new lime.Layer().setPosition(shoot_web.director.getSize().width / 2, 0);
-    this.appendChild(this.cover);
+    this.appendChild(this.cover);	
 	
-	// set the movement boundary for the flies (e.g. the main game area)
-	this.flyMovementBounds = new goog.math.Box(0, this.mask.size_.width, this.mask.size_.height, 0);
+	// set the movement boundary for the flies (e.g. the main game area)	
+	this.flyMovementBounds = new goog.math.Box(130, this.mask.size_.width, this.mask.size_.height + 130, 0);
 	
 	// game config properties
 	this.numberOfFlies = (Math.floor(this.level/2) + 1);	
@@ -59,11 +64,12 @@ goog.inherits(shoot_web.Game,lime.Scene);
 
 shoot_web.Game.prototype.startup = function() {
 	
-    var title = new lime.Label().setText('Loading...').setFontSize(52).setPosition(0, 0);
-    this.cover.appendChild(title);
-    var show = new lime.animation.MoveBy(0, 200).setDuration(1.5);
-    title.runAction(show);
+    lblScore = new lime.Label().setText('SCORE').setFontSize(52).setPosition(0, 0).setFontColor('#EFEFEF');
+    this.cover.appendChild(lblScore);
+    var show = new lime.animation.MoveBy(0, 50).setDuration(1.5);
+    lblScore.runAction(show);
 
+	
     var box = shoot_web.dialogs.box1();
     this.cover.appendChild(box);
     var that = this;
@@ -85,14 +91,16 @@ shoot_web.Game.prototype.startup = function() {
 
                 shoot_web.dialogs.hide(box3, function() {
                     that.cover.removeChild(box3);
-                    that.cover.removeChild(title);
+                    that.cover.removeChild(lblScore);
                     that.start();
                 });
 
             });
 
-        });
+        });				
     });
+		
+	//this.start();
 
 };
 
@@ -109,7 +117,7 @@ shoot_web.Game.prototype.start = function() {
 	
 	// append the flies to the game area
 	for(f = 0; f < this.numberOfFlies; f++){
-		this.appendChild(this.flies[f]);		
+		this.appendChild(this.flies[f]);			
 	}	
 	
 	// add scheduled call to updateGameFrame which refreshes the game UI
@@ -134,7 +142,7 @@ shoot_web.Game.prototype.updateGameFrame = function(){
 			// now that the fly has animated we need to again check the caught state, because if caught now then we need to show a new web
 			if(updatedFlyInstance.isCaught == true){
 				// show a new web, the fly was caught					
-				var dynamicWeb = new shoot_web.Web(updatedFlyInstance.positionX, updatedFlyInstance.positionY, updatedFlyInstance, webCount);
+				var dynamicWeb = new shoot_web.Web(updatedFlyInstance.positionX, updatedFlyInstance.positionY, updatedFlyInstance, this.webCount);
 				this.webs.push(dynamicWeb);
 				
 				// add to number of catches this round
@@ -179,7 +187,7 @@ shoot_web.Game.prototype.updateGameFrame = function(){
 				this.level = 1;
 				
 				// show game over dialog
-				var gameOverDialog = shoot_web.dialogs.box4(this);								
+				var gameOverDialog = shoot_web.dialogs.box4(runningScore);								
 				this.cover.appendChild(gameOverDialog);
 				shoot_web.dialogs.appear(gameOverDialog);
 								
@@ -196,7 +204,7 @@ shoot_web.Game.prototype.updateGameFrame = function(){
 				this.level += 1;				
 				
 				// update the player's score
-				this.updateScore();
+				this.updateScore();				
 				
 				// start the next round				
 				shoot_web.loadGame(this.level);				
@@ -227,25 +235,30 @@ shoot_web.Game.prototype.updateScore = function(){
 	if(potentialNumberCatches == actualNumberCatches){
 		this.score += 25;
 	}
+	
+	runningScore += this.score
+	
+	// debug
+	console.log('Score is now ' + this.score);
+	console.log('Running score is ' + runningScore);	
 }
 
 // add main web click event
-shoot_web.Game.prototype.addMainWeb = function(e) {	
-	
+shoot_web.Game.prototype.addMainWeb = function(e) {		
 	if(this.webCount < this.maxWebs){
 		
-			// place a sticky web			
-			var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y, null).setPosition(e.position.x, e.position.y).setAnchorPoint(0,0);			
-						
-			// offset the position of the web so that the centre of the web appears at the clicked position
-			playerPositionWeb.setPosition(playerPositionWeb.position_.x - (playerPositionWeb.size_.width/2), playerPositionWeb.position_.y + (playerPositionWeb.size_.height/2));
-			
-			this.webs.push(playerPositionWeb);
-			this.appendChild(playerPositionWeb);
-			
-			// increment web count
-			this.webCount += 1;
-		}
+		// place a sticky web			
+		var playerPositionWeb = new shoot_web.Web(e.position.x, e.position.y, null).setPosition(e.position.x, e.position.y).setAnchorPoint(0,0);			
+					
+		// offset the position of the web so that the centre of the web appears at the clicked position
+		playerPositionWeb.setPosition(playerPositionWeb.position_.x - (playerPositionWeb.size_.width/2), playerPositionWeb.position_.y + (playerPositionWeb.size_.height/2));
+		
+		this.webs.push(playerPositionWeb);
+		this.appendChild(playerPositionWeb);
+		
+		// increment web count
+		this.webCount += 1;
+	}
 };
 
 shoot_web.Game.prototype.addModalMessage = function(doAddCloseHandler, message, title, message2, message3){

@@ -58,13 +58,14 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 		if(webs[i].isExpired == false){
 			// the following code detects collision between this fly and the currently iterated web
 			// this needs to be moved into a function
-			var webInstance = webs[i];
-			var distance_squared = ((this.positionX - webInstance.position_.x) * (this.positionX - webInstance.position_.x)) + ((this.positionY - webInstance.position_.y) * (this.positionY - webInstance.position_.y));
+			var webInstance = webs[i];			
+			
+			var distance_squared = ((this.positionX - (webInstance.position_.x +50)) * (this.positionX - (webInstance.position_.x +50))) + ((this.positionY - (webInstance.position_.y + 50)) * (this.positionY - (webInstance.position_.y+50)));
 			var radii_squared = (this.radius + webInstance.radius) * (this.radius + webInstance.radius);
 			var hasCollided = (distance_squared < radii_squared);
-			
+						
 			// if the fly has collided with the web
-			if(hasCollided){
+			if(hasCollided){				
 				this.isCaught = true
 			}
 		}
@@ -81,6 +82,7 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 		this.positionX = this.movementBounds.right;
 	}
 	else if(this.positionX <= 0){
+		// fly has hit left wall
 		this.positionVX = (-this.positionVX);
 		this.positionX = 0;
 	}
@@ -90,10 +92,10 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 		this.positionVY = (-this.positionVY);
 		this.positionY = this.movementBounds.bottom;
 	}
-	else if(this.positionY < 0){
-		// fly has hit left wall
-		this.positionY = 0;
+	else if(this.positionY < this.movementBounds.top){
+		// fly has hit top wall
 		this.positionVY = (-this.positionVY);
+		this.positionY = this.movementBounds.top;		
 	}	
 	
 	return this;

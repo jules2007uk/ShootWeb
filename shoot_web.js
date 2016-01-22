@@ -21,6 +21,7 @@ goog.require('shoot_web.Game');
 
 
 var director;
+var runningScore = 0;
 
 //object to store game-level properties
 //var gameObj;
@@ -54,9 +55,11 @@ shoot_web.loadMenuScene = function(opt_transition){
     var layer = new lime.Layer().setPosition(shoot_web.WIDTH * .5, 0);
     scene.appendChild(layer);
 
-    var title = new lime.Label().setText('Sticky Balls').setPosition(0, 250);
+    var title = new lime.Label().setText('Sticky Balls').setPosition(0, 250).setFontColor('#EFEFEF').setFontSize(40);
     layer.appendChild(title);
-
+	
+	var tapToStart = new lime.Label().setText('Tap to start...').setPosition(0, 475).setFontColor('#EFEFEF').setFontSize(28);
+    layer.appendChild(tapToStart);
 
     var mask = new lime.Sprite().setSize(620, 560).setFill('#c00').setAnchorPoint(0.5, 0).setPosition(0, 410);
     layer.appendChild(mask);
