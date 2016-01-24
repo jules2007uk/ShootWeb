@@ -5,11 +5,11 @@ xmlns:gap = "http://phonegap.com/ns/1.0"
 id = "Sticky Balls"
 version = "0.0.1">
 
-<supports-screens android:anyDensity="true" android:resizeable="true" 
+<!--<supports-screens android:anyDensity="true" android:resizeable="true" 
     android:smallScreens="true" 
     android:normalScreens="true" 
     android:largeScreens="true" 
-    android:xlargeScreens="true" />
+    android:xlargeScreens="true" />-->
 
 <name>Sticky Balls</name>
 <description></description>
