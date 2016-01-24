@@ -6,6 +6,7 @@ goog.require('lime.Director');
 goog.require('lime.Scene');
 goog.require('lime.Layer');  
 goog.require('lime.Circle');
+goog.require('lime.GlossyButton');
 goog.require('lime.animation.FadeTo');
 goog.require('lime.animation.Loop');
 goog.require('lime.animation.MoveBy');
@@ -33,13 +34,6 @@ shoot_web.HEIGHT = 1004;
 shoot_web.start = function(){
 	var gameScene;
 	var mainMenuScene;
-	
-	/*
-	gameObj = {
-	  width: screen.width,
-	  height: screen.height,	  
-	  renderer: lime.Renderer.CANVAS //CANVAS or DOM		  
-	};*/
 										
 	shoot_web.director = new lime.Director(document.body,shoot_web.WIDTH, shoot_web.HEIGHT);
 	shoot_web.director.makeMobileWebAppCapable();	
@@ -55,12 +49,15 @@ shoot_web.loadMenuScene = function(opt_transition){
     var layer = new lime.Layer().setPosition(shoot_web.WIDTH * .5, 0);
     scene.appendChild(layer);
 
-    var title = new lime.Label().setText('Sticky Balls').setPosition(0, 250).setFontColor('#EFEFEF').setFontSize(40);
+    var title = new lime.Sprite().setPosition(0, 250).setFill('images/512x512.png');
     layer.appendChild(title);
 	
-	var tapToStart = new lime.Label().setText('Tap to start...').setPosition(0, 475).setFontColor('#EFEFEF').setFontSize(28);
-    layer.appendChild(tapToStart);
-
+	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 650).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+    layer.appendChild(btnStart);
+	
+	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 775).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+	layer.appendChild(btnHowToPlay);
+		
     var mask = new lime.Sprite().setSize(620, 560).setFill('#c00').setAnchorPoint(0.5, 0).setPosition(0, 410);
     layer.appendChild(mask);
 
@@ -68,13 +65,6 @@ shoot_web.loadMenuScene = function(opt_transition){
     layer.appendChild(contents);
 
     contents.setMask(mask); 
-
-	// add listener to background for game start action
-	goog.events.listen(scene, ['touchstart', 'mousedown'], function(e) {
-			e.event.stopPropagation();
-			
-			shoot_web.loadGame(1);
-		});	
 
     var levels = new lime.Layer().setPosition(0, 690);
     contents.appendChild(levels);
@@ -85,6 +75,20 @@ shoot_web.loadMenuScene = function(opt_transition){
     var btns_layer = new lime.Layer().setPosition(-250, 110);
     levels.appendChild(btns_layer);
    
+	// add listen to how to play button
+	goog.events.listen(btnHowToPlay, ['touchstart', 'mousedown'], function(e) {
+		e.event.stopPropagation();
+		
+		// pass in level 0 which means show the how to play screen
+		shoot_web.loadGame(0);
+	});
+	
+	// add listener to background for game start action
+	goog.events.listen(btnStart, ['touchstart', 'mousedown'], function(e) {
+		e.event.stopPropagation();
+		
+		shoot_web.loadGame(1);
+	});	
 }
 
 shoot_web.loadGame = function(level){	

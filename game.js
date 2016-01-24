@@ -18,11 +18,7 @@ shoot_web.Game = function(level) {
 	this.WIDTH = 600;      
 	this.level = level;	
 	this.mask = new lime.Sprite().setFill(new lime.fill.LinearGradient().addColorStop(0.5, 224, 224, 224, .5).addColorStop(0.8, 192, 192, 192, .5)).setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130);
-    
-	/*
-	var test1 = new lime.Label().setText('Test...').setFontSize(52).setPosition(0, 0).setAnchorPoint(0,0);
-	this.mask.appendChild(test1);*/
-	
+    	
 	this.appendChild(this.mask);	
 	this.mask = new lime.Sprite().setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130);
     this.appendChild(this.mask);	
@@ -32,6 +28,17 @@ shoot_web.Game = function(level) {
     this.layer.setOpacity(.5);	
 	this.cover = new lime.Layer().setPosition(shoot_web.director.getSize().width / 2, 0);
     this.appendChild(this.cover);	
+	
+	// create an empty label to hold the score
+	lblScore = new lime.Label().setText('').setFontSize(52).setPosition(50, 0).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+    this.appendChild(lblScore);
+
+	// create an empty label to hold the level number
+	lblLevel = new lime.Label().setText('').setFontSize(52).setPosition(50, 950).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+	this.appendChild(lblLevel);
+	
+	lblTargetCatches = new lime.Label().setText('').setFontSize(52).setPosition(500, 950).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+	this.appendChild(lblTargetCatches);
 	
 	// set the movement boundary for the flies (e.g. the main game area)	
 	this.flyMovementBounds = new goog.math.Box(130, this.mask.size_.width, this.mask.size_.height + 130, 0);
@@ -56,56 +63,29 @@ shoot_web.Game = function(level) {
 		// level is an even number so targetCatches is the same value as numberOfFlies - 1
 		this.targetCatches = (this.numberOfFlies - 1);
 	}
-		
-	this.startup();
+	
+	if(level == 0){
+		this.showHowToPlay();
+	}
+	else if(level > 0){
+		this.start();
+	}
+	
 }
 
 goog.inherits(shoot_web.Game,lime.Scene);
 
-shoot_web.Game.prototype.startup = function() {
-	
-    lblScore = new lime.Label().setText('SCORE').setFontSize(52).setPosition(0, 0).setFontColor('#EFEFEF');
-    this.cover.appendChild(lblScore);
-    var show = new lime.animation.MoveBy(0, 50).setDuration(1.5);
-    lblScore.runAction(show);
-
-	
-    var box = shoot_web.dialogs.box1();
-    this.cover.appendChild(box);
-    var that = this;
-	
-    goog.events.listen(show, lime.animation.Event.STOP, function() {
-        shoot_web.dialogs.appear(box);
-
-        var box2 = shoot_web.dialogs.box2();
-        shoot_web.dialogs.hide(box, function() {
-            that.cover.removeChild(box);
-            that.cover.appendChild(box2);
-            shoot_web.dialogs.appear(box2);
-
-            var box3 = shoot_web.dialogs.box3(that);
-            shoot_web.dialogs.hide(box2, function() {
-                that.cover.removeChild(box2);
-                that.cover.appendChild(box3);
-                shoot_web.dialogs.appear(box3);
-
-                shoot_web.dialogs.hide(box3, function() {
-                    that.cover.removeChild(box3);
-                    that.cover.removeChild(lblScore);
-                    that.start();
-                });
-
-            });
-
-        });				
-    });
-		
-	//this.start();
-
-};
-
 // start the game
-shoot_web.Game.prototype.start = function() {
+shoot_web.Game.prototype.start = function() {	
+	
+	// set label text for score
+	lblScore.setText('Score: ' + runningScore);
+	
+	// set label text for level
+	lblLevel.setText('Level: ' + this.level);
+	
+	// set target catches label text
+	lblTargetCatches.setText('Catch: ' + this.targetCatches);
 	
 	// add click event to the game area for player main web placement
 	goog.events.listen(this.mask, ['mousedown', 'touchstart', 'keydown'], this.addMainWeb, false, this);		 
@@ -125,6 +105,38 @@ shoot_web.Game.prototype.start = function() {
 		
 };
 
+shoot_web.Game.prototype.showHowToPlay = function(){
+	var show = new lime.animation.MoveBy(0, 50).setDuration(1.5);
+	var box = shoot_web.dialogs.box1();
+	this.cover.appendChild(box);
+	var that = this;    
+	
+	//goog.events.listen(show, lime.animation.Event.STOP, function() {
+        shoot_web.dialogs.appear(box);
+
+        var box2 = shoot_web.dialogs.box2();
+        shoot_web.dialogs.hide(box, function() {
+            that.cover.removeChild(box);
+            that.cover.appendChild(box2);
+            shoot_web.dialogs.appear(box2);
+
+            var box3 = shoot_web.dialogs.box3(that);
+            shoot_web.dialogs.hide(box2, function() {
+                that.cover.removeChild(box2);
+                that.cover.appendChild(box3);
+                shoot_web.dialogs.appear(box3);
+
+                shoot_web.dialogs.hide(box3, function() {
+                    that.cover.removeChild(box3);
+                    that.cover.removeChild(lblScore);
+                    location.reload();
+                });
+
+            });
+
+        });				
+    //});
+}
 
 shoot_web.Game.prototype.updateGameFrame = function(){
 	
@@ -236,11 +248,8 @@ shoot_web.Game.prototype.updateScore = function(){
 		this.score += 25;
 	}
 	
-	runningScore += this.score
+	runningScore += this.score;
 	
-	// debug
-	console.log('Score is now ' + this.score);
-	console.log('Running score is ' + runningScore);	
 }
 
 // add main web click event
