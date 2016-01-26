@@ -17,9 +17,10 @@ shoot_web.Game = function(level) {
 	this.setRenderer(lime.Renderer.CANVAS);	
 	this.WIDTH = 600;      
 	this.level = level;	
+	this.bestScore = 0;
+	
 	this.mask = new lime.Sprite().setFill(new lime.fill.LinearGradient().addColorStop(0.5, 224, 224, 224, .5).addColorStop(0.8, 192, 192, 192, .5)).setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130);
-    	
-	this.appendChild(this.mask);	
+    this.appendChild(this.mask);	
 	this.mask = new lime.Sprite().setSize(768, 760).setAnchorPoint(0, 0).setPosition(0, 130);
     this.appendChild(this.mask);	
 	this.layer = new lime.Layer();    
@@ -30,14 +31,18 @@ shoot_web.Game = function(level) {
     this.appendChild(this.cover);	
 	
 	// create an empty label to hold the score
-	lblScore = new lime.Label().setText('').setFontSize(52).setPosition(50, 0).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+	lblScore = new lime.Label().setText('').setFontSize(44).setPosition(50, 0).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
     this.appendChild(lblScore);
+	
+	// create an empty label to hold the user's best score
+	lblUserHighScore = new lime.Label().setText('').setFontSize(44).setPosition(500, 0).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+	this.appendChild(lblUserHighScore);
 
 	// create an empty label to hold the level number
-	lblLevel = new lime.Label().setText('').setFontSize(52).setPosition(50, 950).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+	lblLevel = new lime.Label().setText('').setFontSize(44).setPosition(50, 950).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
 	this.appendChild(lblLevel);
 	
-	lblTargetCatches = new lime.Label().setText('').setFontSize(52).setPosition(500, 950).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
+	lblTargetCatches = new lime.Label().setText('').setFontSize(44).setPosition(500, 950).setFontColor('#C0C0C0').setAlign('right').setAnchorPoint(0, 0);
 	this.appendChild(lblTargetCatches);
 	
 	// set the movement boundary for the flies (e.g. the main game area)	
@@ -75,8 +80,31 @@ shoot_web.Game = function(level) {
 
 goog.inherits(shoot_web.Game,lime.Scene);
 
+// retrieve best score stored in local storage
+shoot_web.Game.prototype.getBestScore = function(){
+	var scoreRetrieved = localStorage.getItem("UserBestScore");
+	
+	if(scoreRetrieved != null){
+		return scoreRetrieved;
+	}
+	else{
+		return 0;
+	}
+}
+
+// set best score in local storage
+shoot_web.Game.prototype.setBestScore = function(scoreToAdd){	
+	localStorage.setItem("UserBestScore", scoreToAdd);
+}
+
 // start the game
 shoot_web.Game.prototype.start = function() {	
+	
+	// get user's high score from localStorage
+	this.bestScore = this.getBestScore();
+
+	// set user high score to label text if found in local storage
+	lblUserHighScore.setText('Best: ' + this.bestScore);		
 	
 	// set label text for score
 	lblScore.setText('Score: ' + runningScore);
@@ -197,6 +225,14 @@ shoot_web.Game.prototype.updateGameFrame = function(){
 			if((this.webCount - 1) < this.targetCatches){
 				// player lost so set level count back to 1
 				this.level = 1;
+				
+				// set best score in cookie if bigger than previous best
+				if(runningScore > this.bestScore){
+					this.setBestScore(runningScore);
+				}
+
+				// submit score to scoreboard API
+				scoreboard.SubmitScore(runningScore, 'playerId1', 'StickyBalls');
 				
 				// show game over dialog
 				var gameOverDialog = shoot_web.dialogs.box4(runningScore);								

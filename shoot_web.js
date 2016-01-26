@@ -14,6 +14,7 @@ goog.require('lime.animation.ScaleTo');
 goog.require('lime.animation.Sequence');
 goog.require('lime.animation.Spawn');
 goog.require('lime.transitions.MoveInUp');
+goog.require('lime.transitions.Dissolve');
 	
 // pull in custom js files
 goog.require('shoot_web.Fly');
@@ -24,11 +25,9 @@ goog.require('shoot_web.Game');
 var director;
 var runningScore = 0;
 
-//object to store game-level properties
-//var gameObj;
-
 shoot_web.WIDTH = 768;
 shoot_web.HEIGHT = 1004;
+shoot_web.UserBestScore;
 
 // entrypoint
 shoot_web.start = function(){
@@ -49,13 +48,16 @@ shoot_web.loadMenuScene = function(opt_transition){
     var layer = new lime.Layer().setPosition(shoot_web.WIDTH * .5, 0);
     scene.appendChild(layer);
 
-    var title = new lime.Sprite().setPosition(0, 250).setFill('images/512x512.png');
-    layer.appendChild(title);
+    var menuLogo = new lime.Sprite().setPosition(0, 250).setFill('images/512x512.png');
+    layer.appendChild(menuLogo);
 	
-	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 650).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+	var lblWorldHighScore = new lime.Label().setText('').setPosition(0, 650).setFontColor('#EFEFEF').setSize(650,100).setFontSize(40);
+    layer.appendChild(lblWorldHighScore);	
+	
+	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 750).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
     layer.appendChild(btnStart);
 	
-	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 775).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 875).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
 	layer.appendChild(btnHowToPlay);
 		
     var mask = new lime.Sprite().setSize(620, 560).setFill('#c00').setAnchorPoint(0.5, 0).setPosition(0, 410);
@@ -74,6 +76,15 @@ shoot_web.loadMenuScene = function(opt_transition){
 
     var btns_layer = new lime.Layer().setPosition(-250, 110);
     levels.appendChild(btns_layer);
+	
+	// get this person's highest score from local storage
+	shoot_web.UserBestScore = shoot_web.getBestScore();
+	
+	// submit this person's highest score to scoreboard API just incase it has never been uploaded before
+	scoreboard.SubmitScore(shoot_web.UserBestScore, 'playerId1', 'StickyBalls');
+	
+	// call the scoreboard api to get the high score and append to the label supplied via parameter
+	scoreboard.GetHighScore(lblWorldHighScore);
    
 	// add listen to how to play button
 	goog.events.listen(btnHowToPlay, ['touchstart', 'mousedown'], function(e) {
@@ -93,17 +104,20 @@ shoot_web.loadMenuScene = function(opt_transition){
 
 shoot_web.loadGame = function(level){	
 	shoot_web.activeGame = new shoot_web.Game(level);
-	shoot_web.director.replaceScene(shoot_web.activeGame, lime.transitions.MoveInUp);
+	shoot_web.director.replaceScene(shoot_web.activeGame, lime.transitions.Dissolve);
 }
 
-/*
-// reset the game round variables such as counters of webs and flies
-resetGameRoundVariables = function(){
-	flies = [];
-	webs = [];
-	webCount = 0; // the ongoing live count of total deployed webs
-	expiredWebCount = 0; // the ongoing live count of expired webs
-}*/
+// retrieve best score stored in local storage
+shoot_web.getBestScore = function(){
+	var scoreRetrieved = localStorage.getItem("UserBestScore");
+	
+	if(scoreRetrieved != null){
+		return scoreRetrieved;
+	}
+	else{
+		return 0;
+	}
+}
 
 //this is required for outside access after code is compiled in ADVANCED_COMPILATIONS mode
 goog.exportSymbol('shoot_web.start', shoot_web.start);
