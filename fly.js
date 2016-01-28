@@ -81,10 +81,10 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 		this.positionVX = (-this.positionVX);
 		this.positionX = this.movementBounds.right;
 	}
-	else if(this.positionX <= 0){
+	else if(this.positionX <= this.movementBounds.left){
 		// fly has hit left wall
 		this.positionVX = (-this.positionVX);
-		this.positionX = 0;
+		this.positionX = this.movementBounds.left;
 	}
 	
 	if(this.positionY >= this.movementBounds.bottom){

@@ -1,7 +1,7 @@
 /* 
 * Author:	Julian Willing
 * Date:		25/01/2016
-* Desc:		Client API handler for ScoreboardAPI_v2
+* Desc:		Client API handler for ScoreboardAPI
 */
 
 "use strict";
@@ -10,8 +10,7 @@ var scoreboard = scoreboard || {};
 
 // gets the highest score across all players from the scoreboard API v2
 scoreboard.GetHighScore = function(lblWorldHighScore){
-	var url = 'http://jwiwebdesign.co.uk/ScoreboardAPI_v2/API/scores/';
-	url = 'http://localhost:55573/Api/scores?gameName=stickyballs';
+	var url = 'http://jwiwebdesign.co.uk/ScoreboardAPI/API/scores?gameName=stickyballs';
 	
 	var xhr = createCORSRequest('GET', url);
 	
@@ -41,8 +40,7 @@ scoreboard.GetHighScore = function(lblWorldHighScore){
 
 // submits a new score to the scoreboard API
 scoreboard.SubmitScore = function(playerScore, playerId, gameName){
-	var url = 'http://jwiwebdesign.co.uk/ScoreboardAPI_v2/API/scores?playerScore=' + playerScore + '&playerId=' + playerId + '&gameName=' + gameName;
-	url = 'http://localhost:55573/Api/scores?playerScore=' + playerScore + '&playerId=' + playerId + '&gameName=' + gameName;
+	var url = 'http://jwiwebdesign.co.uk/ScoreboardAPI/API/scores?playerScore=' + playerScore + '&playerId=' + playerId + '&gameName=' + gameName;
 	
 	var xhr = createCORSRequest('POST', url);
 	
