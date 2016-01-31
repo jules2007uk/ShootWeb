@@ -232,7 +232,7 @@ shoot_web.Game.prototype.updateGameFrame = function(){
 				}
 
 				// submit score to scoreboard API
-				scoreboard.SubmitScore(runningScore, 'playerId1', 'StickyBalls');
+				scoreboard.SubmitScore(runningScore, 'Test', 'StickyBalls');
 				
 				// show game over dialog
 				var gameOverDialog = shoot_web.dialogs.box4(runningScore);								

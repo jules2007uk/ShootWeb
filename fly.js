@@ -58,45 +58,60 @@ goog.inherits(shoot_web.Fly,lime.Circle);
 		if(webs[i].isExpired == false){
 			// the following code detects collision between this fly and the currently iterated web
 			// this needs to be moved into a function
-			var webInstance = webs[i];			
+			var webInstance = webs[i];	
+
+			var offset = 0;
 			
-			var distance_squared = ((this.positionX - (webInstance.position_.x +50)) * (this.positionX - (webInstance.position_.x +50))) + ((this.positionY - (webInstance.position_.y + 50)) * (this.positionY - (webInstance.position_.y+50)));
+			// if this is the main web then we have to set an offset to accurately calculate the collision
+			// to cut a long story short, this is because the position of the main web is offset by 50px on the x and y axis
+			// so that the web appears at the centre of the tap/click, else the circle would start drawing at the position, and appear down and right 
+			// of the coordinate
+			if(i==0){
+				offset = 50;
+			}
+			
+			var distance_squared = ((this.positionX - (webInstance.position_.x +offset)) * (this.positionX - (webInstance.position_.x +offset))) + ((this.positionY - (webInstance.position_.y + offset)) * (this.positionY - (webInstance.position_.y+offset)));
 			var radii_squared = (this.radius + webInstance.radius) * (this.radius + webInstance.radius);
 			var hasCollided = (distance_squared < radii_squared);
 						
 			// if the fly has collided with the web
 			if(hasCollided){				
-				this.isCaught = true
-			}
+				this.isCaught = true;
+			}			
 		}
 	}
 	
-	this.positionX += this.positionVX;
-	this.positionY += this.positionVY;
-	this.setPosition(this.positionX, this.positionY);
-	
-	// logic to determine what to do when the fly hits a wall
-	if(this.positionX >= this.movementBounds.right){
-		// fly has hit right wall
-		this.positionVX = (-this.positionVX);
-		this.positionX = this.movementBounds.right;
+	// only need to detect collision with the wall, or change position of the fly if it hasn't been caught
+	if(! this.isCaught){
+		
+		// set new position for fly
+		this.positionX += this.positionVX;
+		this.positionY += this.positionVY;
+		this.setPosition(this.positionX, this.positionY);
+		
+		// logic to determine what to do when the fly hits a wall
+		if(this.positionX >= this.movementBounds.right){
+			// fly has hit right wall
+			this.positionVX = (-this.positionVX);
+			this.positionX = this.movementBounds.right;
+		}
+		else if(this.positionX <= this.movementBounds.left){
+			// fly has hit left wall
+			this.positionVX = (-this.positionVX);
+			this.positionX = this.movementBounds.left;
+		}
+		
+		if(this.positionY >= this.movementBounds.bottom){
+			// fly has hit bottom wall
+			this.positionVY = (-this.positionVY);
+			this.positionY = this.movementBounds.bottom;
+		}
+		else if(this.positionY < this.movementBounds.top){
+			// fly has hit top wall
+			this.positionVY = (-this.positionVY);
+			this.positionY = this.movementBounds.top;		
+		}
 	}
-	else if(this.positionX <= this.movementBounds.left){
-		// fly has hit left wall
-		this.positionVX = (-this.positionVX);
-		this.positionX = this.movementBounds.left;
-	}
-	
-	if(this.positionY >= this.movementBounds.bottom){
-		// fly has hit bottom wall
-		this.positionVY = (-this.positionVY);
-		this.positionY = this.movementBounds.bottom;
-	}
-	else if(this.positionY < this.movementBounds.top){
-		// fly has hit top wall
-		this.positionVY = (-this.positionVY);
-		this.positionY = this.movementBounds.top;		
-	}	
 	
 	return this;
  };
