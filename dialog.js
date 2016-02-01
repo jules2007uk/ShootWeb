@@ -51,7 +51,7 @@ shoot_web.dialogs.box3 = function(game) {
     var txt = new lime.Label().setText('How to play').setFontSize(40).setPosition(0, 70);
 	  b.appendChild(txt);
 
-	  var descr = new lime.Label().setText('Each ball dissapears after 3 seconds. When all balls expire the round is over.').setSize(450, 50).setPosition(0, 130).setFontSize(24).setFontColor('#333');
+	  var descr = new lime.Label().setText('Each ball expires after 3 seconds. When all balls expire the round is over.').setSize(450, 50).setPosition(0, 130).setFontSize(24).setFontColor('#333');
 	  b.appendChild(descr);
 	  
     return b;

@@ -2,7 +2,6 @@
 TODO:
 Delay between global high score being updated after beating the record - Implement top 5/10 leaderboard visible on main menu button click
 Implement device GUID used in storage of high score on leaderboard
-Re-think game config settings (e.g. no. of balls, catches required.)
 */
 
 //set main namespace

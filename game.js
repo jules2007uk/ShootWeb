@@ -49,7 +49,7 @@ shoot_web.Game = function(level) {
 	this.flyMovementBounds = new goog.math.Box(130, this.mask.size_.width, this.mask.size_.height + 130, 0);
 	
 	// game config properties
-	this.numberOfFlies = (Math.floor(this.level/2) + 1);	
+	this.numberOfFlies = 0;	
 	this.targetCatches = 0;
 	this.webCount = 0;
 	this.webs = [];
@@ -58,21 +58,62 @@ shoot_web.Game = function(level) {
 	this.roundCatchCount = 0;
 	this.expiredWebCount = 0;
 	this.score = 0;
+	this.configLevelNumber = 0; // to hold the config level (e.g. difficulty)
+	this.topConfigLevel = 20;	// specify the top config level (e.g. difficulty)
 	
-	// work out target catches required
-	if(isOdd(this.level)){
-		// level is odd number so targetCatches is the same value as numberOfFlies
-		this.targetCatches = this.numberOfFlies;
+	// divide the level number by the top config level to ascertain the remainder, which we then use as the configLevel value
+	var remainder = this.level % this.topConfigLevel;
+	
+	// if the remainder is 0
+	if(remainder == 0){
+		// this means that the current level is the top level achievable, therefore set config level to 
+		this.configLevelNumber = this.topConfigLevel;
 	}
 	else{
-		// level is an even number so targetCatches is the same value as numberOfFlies - 1
-		this.targetCatches = (this.numberOfFlies - 1);
+		// else set the config level number to be the remainder value
+		// (e.g. remainder would be 6 if level was 26 and top config level was 20)
+		this.configLevelNumber = remainder;
 	}
 	
-	if(level == 0){
+	// target catches is the same as the config level number
+	this.targetCatches = this.configLevelNumber;
+	
+	// calculate how many available flies to catch
+	// the formaula below calculates the following level config:
+	/*
+		configLevel	Target	Balls
+		1			1		2
+		2			2		4
+		3			3		6
+		4			4		8
+		5			5		10
+		6			6		12
+		7			7		14
+		8			8		16
+		9			9		18
+		10			10		20
+		11			11		20
+		12			12		20
+		13			13		20
+		14			14		20
+		15			15		20
+		16			16		20
+		17			17		20
+		18			18		20
+		19			19		20
+		20			20		20
+	*/
+	if(this.configLevelNumber <= 10){
+		this.numberOfFlies = (this.configLevelNumber * 2);
+	}
+	else{
+		this.numberOfFlies = 20;
+	}
+	
+	if(this.configLevelNumber == 0){
 		this.showHowToPlay();
 	}
-	else if(level > 0){
+	else if(this.configLevelNumber > 0){
 		this.start();
 	}
 	
