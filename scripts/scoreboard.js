@@ -8,34 +8,37 @@
 
 var scoreboard = scoreboard || {};
 
-// gets the highest score across all players from the scoreboard API v2
-scoreboard.GetHighScore = function(lblWorldHighScore){
-	var url = 'http://jwiwebdesign.co.uk/WordWalkScoreboardAPI/API/scores?gameName=stickyballs';
+// gets the top 5 distinct highest score across all stickyballs players from the scoreboard API v2
+scoreboard.GetHighScores = function(){
 	
-	var xhr = createCORSRequest('GET', url);
+	// because this is an asynchronous call we use javascript promise so that the calling function can wait until the function returns a response
+	return new Promise(function(resolve, reject) {	
 	
-	/* Response handlers *********************/
-	xhr.onload = function() {
-		// read response from server	
-		var responseText = xhr.responseText;
+		var url = 'http://jwiwebdesign.co.uk/WordWalkScoreboardAPI/API/scores?gameName=stickyballs&numberOfScores=5';		
+		var xhr = createCORSRequest('GET', url);
+		
+		/* Response handlers *********************/
+		xhr.onload = function() {
+			// read response from server	
+			var responseText = xhr.responseText;
 
-		// parse response to object
-		var score = JSON.parse(responseText);
+			// parse response to object
+			var scores = JSON.parse(responseText);
 
-		// add global high score to label
-		if(score.PlayerScore > 0){
-			lblWorldHighScore.setText('Global High Score: ' + score.PlayerScore);
-		}		
-	};
-	
-	xhr.onerror = function() {
-		// looks like something went wrong making the request
-        
-	};
-	/* ***************************************/
+			// returns the 
+			resolve(scores);		
+		};
+		
+		xhr.onerror = function() {
+			// looks like something went wrong making the request
+			//reject(Error(xhr.statusText));
+		};
+		/* ***************************************/
 
-	// send the request to the scoreboard API v2
-	xhr.send();
+		// send the request to the scoreboard API v2
+		xhr.send();
+		
+	});
 }
 
 // submits a new score to the scoreboard API

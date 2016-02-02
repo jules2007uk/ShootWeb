@@ -110,10 +110,14 @@ shoot_web.Game = function(level) {
 		this.numberOfFlies = 20;
 	}
 	
-	if(this.configLevelNumber == 0){
+    // the level number tells us to display either the level, the how to play, or global leaderboard screens respectively
+	if(this.level == 0){
 		this.showHowToPlay();
 	}
-	else if(this.configLevelNumber > 0){
+	else if (this.level == -1) {
+	    this.showGlobalLeaderboard();
+	}
+	else if (this.level > 0) {
 		this.start();
 	}
 	
@@ -207,6 +211,22 @@ shoot_web.Game.prototype.showHowToPlay = function(){
     //});
 }
 
+// function to show the global leaderboard popup screen
+shoot_web.Game.prototype.showGlobalLeaderboard = function () {
+    var show = new lime.animation.MoveBy(0, 50).setDuration(1.5);
+    var box = shoot_web.dialogs.box5();
+    this.cover.appendChild(box);
+    var that = this;
+    
+    // show the box
+    shoot_web.dialogs.appear(box);
+	
+	shoot_web.dialogs.hide(box, function() {
+		that.cover.removeChild(box);		
+		location.reload();
+	});
+}
+
 shoot_web.Game.prototype.updateGameFrame = function(){
 	
 	// for each fly animate the fly (e.g. move their position) and get the updated state of the fly
@@ -273,7 +293,7 @@ shoot_web.Game.prototype.updateGameFrame = function(){
 				}
 
 				// submit score to scoreboard API
-				scoreboard.SubmitScore(runningScore, 'Test', 'StickyBalls');
+				scoreboard.SubmitScore(runningScore, shoot_web.DeviceGUID, 'StickyBalls');
 				
 				// show game over dialog
 				var gameOverDialog = shoot_web.dialogs.box4(runningScore);								

@@ -1,7 +1,6 @@
 /* 
 TODO:
-Delay between global high score being updated after beating the record - Implement top 5/10 leaderboard visible on main menu button click
-Implement device GUID used in storage of high score on leaderboard
+Re-size how to play images
 */
 
 //set main namespace
@@ -34,6 +33,7 @@ var runningScore = 0;
 shoot_web.WIDTH = 768;
 shoot_web.HEIGHT = 1004;
 shoot_web.UserBestScore;
+shoot_web.DeviceGUID;
 
 // entrypoint
 shoot_web.start = function(){
@@ -41,7 +41,20 @@ shoot_web.start = function(){
 	var mainMenuScene;
 										
 	shoot_web.director = new lime.Director(document.body,shoot_web.WIDTH, shoot_web.HEIGHT);
-	shoot_web.director.makeMobileWebAppCapable();	
+	shoot_web.director.makeMobileWebAppCapable();
+
+	// check localstorage to see if a device GUID has been created for this device
+	shoot_web.DeviceGUID = localStorage.getItem('DeviceGUID');
+	
+	// if no GUID found then create one and store it in localstorage
+	if(shoot_web.DeviceGUID == null){
+		
+		// set device GUID property
+		this.DeviceGUID = this.generateGuid();
+		
+		// store GUID in localstorage
+		localStorage.setItem('DeviceGUID', this.DeviceGUID);		
+	}	
 	
 	// build the main menu scene
 	shoot_web.loadMenuScene();	
@@ -57,14 +70,14 @@ shoot_web.loadMenuScene = function(opt_transition){
     var menuLogo = new lime.Sprite().setPosition(0, 250).setFill('images/512x512.png');
     layer.appendChild(menuLogo);
 	
-	var lblWorldHighScore = new lime.Label().setText('').setPosition(0, 650).setFontColor('#EFEFEF').setSize(650,100).setFontSize(40);
-    layer.appendChild(lblWorldHighScore);	
-	
-	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 750).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 625).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
     layer.appendChild(btnStart);
 	
-	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 875).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 750).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
 	layer.appendChild(btnHowToPlay);
+	
+	var btnGlobalLeaderboard = new lime.GlossyButton().setText('Global leaderboard').setPosition(0, 875).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+    layer.appendChild(btnGlobalLeaderboard);
 		
     var mask = new lime.Sprite().setSize(620, 560).setFill('#c00').setAnchorPoint(0.5, 0).setPosition(0, 410);
     layer.appendChild(mask);
@@ -87,11 +100,8 @@ shoot_web.loadMenuScene = function(opt_transition){
 	shoot_web.UserBestScore = shoot_web.getBestScore();
 	
 	// submit this person's highest score to scoreboard API just incase it has never been uploaded before
-	scoreboard.SubmitScore(shoot_web.UserBestScore, 'playerId1', 'StickyBalls');
-	
-	// call the scoreboard api to get the high score and append to the label supplied via parameter
-	scoreboard.GetHighScore(lblWorldHighScore);
-   
+	scoreboard.SubmitScore(shoot_web.UserBestScore, this.DeviceGUID, 'StickyBalls');
+	   
 	// add listen to how to play button
 	goog.events.listen(btnHowToPlay, ['touchstart', 'mousedown'], function(e) {
 		e.event.stopPropagation();
@@ -105,7 +115,15 @@ shoot_web.loadMenuScene = function(opt_transition){
 		e.event.stopPropagation();
 		
 		shoot_web.loadGame(1);
-	});	
+	});
+	
+	// add listener to background for global leaderboard action
+	goog.events.listen(btnGlobalLeaderboard, ['touchstart', 'mousedown'], function(e) {
+		e.event.stopPropagation();
+		
+		// pass in level -1 which means show the global leaderboard screen
+		shoot_web.loadGame(-1);
+	});
 }
 
 shoot_web.loadGame = function(level){	
@@ -123,6 +141,14 @@ shoot_web.getBestScore = function(){
 	else{
 		return 0;
 	}
+}
+
+// generates a unique ID for the device
+shoot_web.generateGuid = function(){
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 //this is required for outside access after code is compiled in ADVANCED_COMPILATIONS mode
