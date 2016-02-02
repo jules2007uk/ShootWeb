@@ -15,10 +15,10 @@ shoot_web.dialogs.box1 = function() {
     var descr = new lime.Label().setText('Catch the target number of balls to progress to the next round').setSize(450, 50).setPosition(0, 130).setFontSize(24).setFontColor('#333');
     b.appendChild(descr);
 
-    var tutorial1 = new lime.Sprite().setFill('images/how-to-play/howtoplay-1.png').setPosition(-150, 400).setScale(.9);
+    var tutorial1 = new lime.Sprite().setFill('images/how-to-play/howtoplay-1.png').setPosition(-150, 400).setScale(.8);
     b.appendChild(tutorial1);
 
-    var tutorial2 = new lime.Sprite().setFill('images/how-to-play/howtoplay-2.png').setPosition(150, 400).setScale(.9);
+    var tutorial2 = new lime.Sprite().setFill('images/how-to-play/howtoplay-2.png').setPosition(150, 400).setScale(.8);
     b.appendChild(tutorial2);
 
     var hint1 = new lime.Label().setFontSize(22).setFontColor('#80c010').setText('Tap in the game area to place a sticky ball').setSize(250, 50).setPosition(-150, 210);
