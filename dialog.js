@@ -127,8 +127,8 @@ shoot_web.dialogs.appear = function(b,callback) {
     if (callback) goog.events.listen(appear, lime.animation.Event.STOP, callback);
 };
 
-shoot_web.dialogs.hide = function(b,callback) {
-    var hide = new lime.animation.Sequence(new lime.animation.Delay().setDuration(7), new lime.animation.FadeTo(0).setDuration(.3));
+shoot_web.dialogs.hide = function(b,callback, delay) {
+    var hide = new lime.animation.Sequence(new lime.animation.Delay().setDuration(delay), new lime.animation.FadeTo(0).setDuration(.3));
     b.runAction(hide);
     if (callback) goog.events.listen(hide, lime.animation.Event.STOP, callback);
 };

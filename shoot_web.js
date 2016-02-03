@@ -71,13 +71,19 @@ shoot_web.loadMenuScene = function(opt_transition){
     layer.appendChild(menuLogo);
 	
 	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 625).setColor('#EFEFEF').setSize(500,100).setFontSize(30);
+	btnStart.upstate.label.setSize(600,30);
+	btnStart.downstate.label.setSize(600,30);
 	layer.appendChild(btnStart);
 	
 	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 750).setColor('#EFEFEF').setSize(500,100).setFontSize(30);
+	btnHowToPlay.upstate.label.setSize(600,30);
+	btnHowToPlay.downstate.label.setSize(600,30);
 	layer.appendChild(btnHowToPlay);
 	
 	var btnGlobalLeaderboard = new lime.GlossyButton().setText('Global leaderboard').setPosition(0, 875).setColor('#EFEFEF').setSize(500,100).setFontSize(30);
-    layer.appendChild(btnGlobalLeaderboard);	
+    btnGlobalLeaderboard.upstate.label.setSize(600,30);
+	btnGlobalLeaderboard.downstate.label.setSize(600,30);
+	layer.appendChild(btnGlobalLeaderboard);	
 		
     var mask = new lime.Sprite().setSize(620, 560).setFill('#c00').setAnchorPoint(0.5, 0).setPosition(0, 410);
     layer.appendChild(mask);

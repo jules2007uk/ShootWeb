@@ -1,0 +1,18 @@
+CACHE MANIFEST
+
+scripts/sw.js
+scripts/scoreboard.js
+
+images/how-to-play/howtoplay-1.png
+images/how-to-play/howtoplay-2.png
+images/how-to-play/howtoplay-3.png
+images/512x512.png
+images/fav_chrome.ico
+images/icon-hdpi.png
+images/icon-mdpi.png
+images/icon-xhdpi.png
+images/icon-xxhdpi.png
+images/icon-xxxhdpi.png
+
+NETWORK:
+*

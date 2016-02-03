@@ -203,11 +203,11 @@ shoot_web.Game.prototype.showHowToPlay = function(){
                     that.cover.removeChild(box3);
                     that.cover.removeChild(lblScore);
                     location.reload();
-                });
+                }, 11);
 
-            });
+            }, 7);
 
-        });				
+        }, 11);				
     //});
 }
 
@@ -224,7 +224,7 @@ shoot_web.Game.prototype.showGlobalLeaderboard = function () {
 	shoot_web.dialogs.hide(box, function() {
 		that.cover.removeChild(box);		
 		location.reload();
-	});
+	}, 6);
 }
 
 shoot_web.Game.prototype.updateGameFrame = function(){
