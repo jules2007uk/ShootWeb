@@ -13,7 +13,7 @@ shoot_web.Web = function(x, y, flyInstance, webNumber) {
 	this.deployedTime = new Date().getTime();
 	this.isExpired = false;
 	this.webNumber = webNumber; // the number which corresponds to the order of when the web was caught
-		
+	
 	if(flyInstance != null){
 		
 		// set background color according to fly background colour		
@@ -33,11 +33,21 @@ shoot_web.Web = function(x, y, flyInstance, webNumber) {
 	}
 	
 	if(webNumber != undefined){
-		// create a new label to hold the web number
-		var numberLabel = new lime.Label().setText(this.webNumber).setFontWeight(600).setFontColor('#FCE9A4').setFontSize('20');
+		// create new labels to hold the web number and points value respectively
+		var numberLabel = new lime.Label().setText(this.webNumber).setFontWeight(600).setFontColor('#FCE9A4').setFontSize('20').setOpacity(0);
+		var pointsLabel = new lime.Label().setText('+50pts').setFontWeight(600).setFontColor('#5e8d0c').setFontSize('30');
 		
-		// add web number labelt to the web
+		// define animation actions (hide and appear respectively
+		var hide = new lime.animation.Sequence(new lime.animation.Delay().setDuration(0.5), new lime.animation.FadeTo(0).setDuration(.5));
+		var appear = new lime.animation.FadeTo(1).setDuration(1);
+				
+		// add labels
 		this.appendChild(numberLabel);
+		this.appendChild(pointsLabel);
+		
+		// run animation on labels
+		numberLabel.runAction(appear);
+		pointsLabel.runAction(hide);
 	}	
 	
 }

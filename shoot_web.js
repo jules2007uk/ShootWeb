@@ -1,6 +1,6 @@
 /* 
 TODO:
-Re-size how to play images
+
 */
 
 //set main namespace
@@ -70,14 +70,14 @@ shoot_web.loadMenuScene = function(opt_transition){
     var menuLogo = new lime.Sprite().setPosition(0, 250).setFill('images/512x512.png');
     layer.appendChild(menuLogo);
 	
-	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 625).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
-    layer.appendChild(btnStart);
+	var btnStart = new lime.GlossyButton().setText('Start').setPosition(0, 625).setColor('#EFEFEF').setSize(500,100).setFontSize(30);
+	layer.appendChild(btnStart);
 	
-	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 750).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
+	var btnHowToPlay = new lime.GlossyButton().setText('How to play').setPosition(0, 750).setColor('#EFEFEF').setSize(500,100).setFontSize(30);
 	layer.appendChild(btnHowToPlay);
 	
-	var btnGlobalLeaderboard = new lime.GlossyButton().setText('Global leaderboard').setPosition(0, 875).setColor('#EFEFEF').setSize(400,100).setFontSize(26);
-    layer.appendChild(btnGlobalLeaderboard);
+	var btnGlobalLeaderboard = new lime.GlossyButton().setText('Global leaderboard').setPosition(0, 875).setColor('#EFEFEF').setSize(500,100).setFontSize(30);
+    layer.appendChild(btnGlobalLeaderboard);	
 		
     var mask = new lime.Sprite().setSize(620, 560).setFill('#c00').setAnchorPoint(0.5, 0).setPosition(0, 410);
     layer.appendChild(mask);

@@ -158,7 +158,7 @@ shoot_web.Game.prototype.start = function() {
 	lblLevel.setText('Level: ' + this.level);
 	
 	// set target catches label text
-	lblTargetCatches.setText('Catch: ' + this.targetCatches);
+	lblTargetCatches.setText('Target: ' + this.targetCatches);
 	
 	// add click event to the game area for player main web placement
 	goog.events.listen(this.mask, ['mousedown', 'touchstart', 'keydown'], this.addMainWeb, false, this);		 
@@ -179,7 +179,7 @@ shoot_web.Game.prototype.start = function() {
 };
 
 shoot_web.Game.prototype.showHowToPlay = function(){
-	var show = new lime.animation.MoveBy(0, 50).setDuration(1.5);
+	var show = new lime.animation.MoveBy(0, 50).setDuration(2);
 	var box = shoot_web.dialogs.box1();
 	this.cover.appendChild(box);
 	var that = this;    
@@ -213,7 +213,7 @@ shoot_web.Game.prototype.showHowToPlay = function(){
 
 // function to show the global leaderboard popup screen
 shoot_web.Game.prototype.showGlobalLeaderboard = function () {
-    var show = new lime.animation.MoveBy(0, 50).setDuration(1.5);
+    var show = new lime.animation.MoveBy(0, 50).setDuration(2);
     var box = shoot_web.dialogs.box5();
     this.cover.appendChild(box);
     var that = this;
