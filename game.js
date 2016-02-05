@@ -224,7 +224,15 @@ shoot_web.Game.prototype.showGlobalLeaderboard = function () {
 	shoot_web.dialogs.hide(box, function() {
 		that.cover.removeChild(box);		
 		location.reload();
-	}, 6);
+	}, 12);
+	
+	// add listner to listen for tap event to close leaderboard box on tap
+	goog.events.listen(that, ['touchstart', 'mousedown'], function(e) {
+		e.event.stopPropagation();		
+				
+		// reload back to the main menu (effectively close the popup)
+		location.reload();
+	});
 }
 
 shoot_web.Game.prototype.updateGameFrame = function(){
